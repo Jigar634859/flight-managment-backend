@@ -3,7 +3,9 @@ name: Deploy Spring Boot Backend to EC2
 on:
   push:
     branches:
+	  
       - master
+	  
 
 jobs:
   deploy:
