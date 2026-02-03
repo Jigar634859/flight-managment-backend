@@ -45,7 +45,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}          # your PRIVATE key (PEM) with BEGIN/END + line breaks
           source: "flight-managment-backend2/target/flight-booking-backend-0.0.1-SNAPSHOT.jar"
           # If your version may change, use:
-          # source: "flight-managment-backend2/target/*-SNAPSHOT.jar"
+          # source: "flight-booking-backend2/target/*-SNAPSHOT.jar"
           target: "/home/${{ secrets.EC2_USER }}/"
           overwrite: true
 
