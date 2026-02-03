@@ -11,6 +11,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # (Optional) Show structure to confirm paths
+      - name: Show repo structure (debug)
+        run: |
+          pwd
+          ls -la
+          echo "----- find pom.xml -----"
+          find . -maxdepth 3 -name "pom.xml" -print
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -26,7 +34,7 @@ jobs:
         run: mvn -B clean package -DskipTests
         working-directory: flight-managment-backend2
 
-      # (Optional) Show the built files for debugging
+      # (Optional) List the build output for verification
       - name: List build output
         run: ls -la flight-managment-backend2/target
 
@@ -35,10 +43,11 @@ jobs:
         uses: appleboy/scp-action@v0.1.5
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}         # ec2-user or ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}           # your PRIVATE key (PEM) as a secret
-          source: " flight-managment-backend2/target/flight-booking-backend-0.0.1-SNAPSHOT.jar"
-          # If the version can change, use: "flight-managment-backend2/target/*-SNAPSHOT.jar"
+          username: ${{ secrets.EC2_USER }}     # ec2-user (Amazon Linux) or ubuntu (Ubuntu)
+          key: ${{ secrets.EC2_SSH_KEY }}       # your PRIVATE key (PEM) as a secret
+          source: "flight-managment-backend2/target/flight-booking-backend-0.0.1-SNAPSHOT.jar"
+          # If your version can change, use instead:
+          # source: "flight-managment-backend2/target/*-SNAPSHOT.jar"
           target: "/home/${{ secrets.EC2_USER }}/"
           overwrite: true
 
@@ -51,8 +60,9 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             set -e
+
             echo "Stopping old Java process (if any)..."
-            # Try to stop any process running the previous JAR
+            # Stop the prior jar if it's running
             pkill -f 'flight-booking-backend-0.0.1-SNAPSHOT.jar' || true
             sleep 2
 
@@ -60,5 +70,5 @@ jobs:
             nohup java -jar /home/${{ secrets.EC2_USER }}/flight-booking-backend-0.0.1-SNAPSHOT.jar \
               > /home/${{ secrets.EC2_USER }}/backend.log 2>&1 &
 
-            echo "Process started. Tail last lines of log:"
+            echo "Process started. Last log lines:"
             tail -n 40 /home/${{ secrets.EC2_USER }}/backend.log || true
