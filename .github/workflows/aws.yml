@@ -31,7 +31,7 @@ jobs:
       # 👉 Build INSIDE flight-managment-backend2 (where pom.xml lives)
       - name: Build Spring Boot Jar
         run: mvn -B clean package -DskipTests
-        working-directory: flight-managment-backend2
+        working-directory: flight-booking-backend2
 
       - name: List build output
         run: ls -la flight-managment-backend2/target
